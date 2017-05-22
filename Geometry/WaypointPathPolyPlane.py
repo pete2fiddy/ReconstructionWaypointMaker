@@ -64,7 +64,7 @@ class WaypointPathPolyPlane(PolyPlane):
                     end_point = intersection_points[i][0]
                     path_to_extend = intersection_points[i][1].get_path_between_start_and_end_around_perimeter(start_point, end_point)
                     out_segments.append(start_point)
-                    out_segments.extend(path_to_extend)
+                    #out_segments.extend(path_to_extend)
 
             else:
                 out_segments.append(intersection_points[i][0])

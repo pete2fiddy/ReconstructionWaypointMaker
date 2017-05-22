@@ -6,9 +6,6 @@ from Geometry.Sphere import Sphere
 import numpy
 from WaypointOps.Obstacle import Obstacle
 
-#geo_points = [GeoPoint(38.860841, -77.242213, 0), GeoPoint(38.860904, -77.242202, 0), GeoPoint(38.860893, -77.242140, 0),  GeoPoint(38.860851, -77.242133, 0), GeoPoint(38.860829, -77.242166, 0)]
-
-
 obstacle_geos = [GeoPoint(38.860438, -77.242484, 0.0025), GeoPoint(38.86042980000243,-77.24247560000045,0), GeoPoint(38.860469, -77.242500, .001), GeoPoint(38.860461, -77.242483, 0.0035)]
 obstacle_constraints = [(.75,), (0.85,), (1.0,), (1.1,)]
 obstacle_shape_type = Sphere

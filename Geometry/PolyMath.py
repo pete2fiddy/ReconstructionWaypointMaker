@@ -13,8 +13,7 @@ def area_of_triangle(triangle_points):
 
     mag_sub_v1 = numpy.linalg.norm(sub_v1)
     mag_sub_v2 = numpy.linalg.norm(sub_v2)
-    if mag_sub_v1 * mag_sub_v2 == 0:
-        return 0
+
     cos_angle_between = numpy.dot(sub_v1, sub_v2)/(mag_sub_v1 * mag_sub_v2)
     '''In one bizarre error-case, the above yielded 1, and when printed, printed 1.0. Yet, when it was subtracted from 1 in the square root
     below, the result was a very small NEGATIVE number, crashing the application. The below is to remedy this so that it cannot crash on
@@ -23,7 +22,7 @@ def area_of_triangle(triangle_points):
     if abs(cos_angle_between) > 1.0:
         cos_angle_between = (cos_angle_between/abs(cos_angle_between))
     sin_angle_between = sqrt(1.0 - cos_angle_between**2)
-    area = mag_sub_v1 * mag_sub_v2 * sin_angle_between
+    area =  numpy.linalg.norm(numpy.cross(sub_v1, sub_v2))#sin_angle_between
     return area
 
 def get_triangles_from_corners_to_point(corners, point):

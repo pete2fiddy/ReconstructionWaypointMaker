@@ -7,12 +7,15 @@ class PolyPlane:
     the dot product will not equal zero, but something very close to it. So long as the dot with the normal is accurate to the error
     margin, it will be considered within the bounded plane'''
     PLANE_DOT_PRODUCT_MARGIN_OF_ERROR = 0.001
+    POINT_IN_POLYGON_BOUNDED_AREA_TOLERANCE_CONSTANT = 0.01
     '''polygon must be convex relative to the origin'''
     def __init__(self, bounding_points):
         self.bounding_points = bounding_points
         self.origin = numpy.average(self.bounding_points, axis = 0)
+
         self.init_unit_normal()
         self.init_bounded_area()
+
         self.init_plane_basis_vectors()
 
     def init_unit_normal(self):
@@ -29,6 +32,7 @@ class PolyPlane:
         '''is a little bit of a clumsy way of calculating the area of the polygon plane'''
         triangles = PolyMath.get_triangles_from_corners_to_point(self.bounding_points, self.origin)
         self.bounded_area = self.get_total_area_of_triangles(triangles)
+        self.point_in_polygon_bounded_area_threshold = self.bounded_area*PolyPlane.POINT_IN_POLYGON_BOUNDED_AREA_TOLERANCE_CONSTANT + self.bounded_area
 
     def point_lies_in_bounded_plane(self, point):
         if not self.point_lies_in_unbounded_plane(point):
@@ -38,7 +42,7 @@ class PolyPlane:
         '''this calculation may be subject to the same problems that the dot product calculation could have -- where if there is lossyness
         in calculation, points that do lie within the bounded plane will not be counted as such. May have to include a ratio'd margin of
         error later'''
-        return (total_area <= self.bounded_area)
+        return (total_area <= self.point_in_polygon_bounded_area_threshold)
 
     def line_lies_in_unbounded_plane(self, segment_points):
         for i in range(0, len(segment_points)):

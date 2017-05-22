@@ -7,7 +7,6 @@ from Geometry.PolyPlane import PolyPlane
 from Geometry.WaypointPathPolyPlane import WaypointPathPolyPlane
 import os
 
-
 class WaypointBuilder:
     '''number of z meters per xy meter'''
     DEFAULT_ALTITUDE_ROC = 1.0/50.0
@@ -100,17 +99,20 @@ class WaypointBuilder:
             self.obstacles[i].init_shape(self.geo_bounds_origin)
 
     def init_plane_intersections(self):
+        self.plane_intersection_slices = []
         for i in range(0, len(self.waypoint_path_poly_planes)):
             iter_plane_intersection_points = []
             for j in range(0, len(self.obstacles)):
                 iter_shape = self.obstacles[j].shape
                 iter_shape_intersections = iter_shape.get_intersection_points_with_plane(self.waypoint_path_poly_planes[i], WaypointBuilder.DEFAULT_OBSTACLE_AVOIDANCE_RESOLUTION)
-                print("iter shape intersections: ", iter_shape_intersections)
+
                 if not iter_shape_intersections == None and len(iter_shape_intersections) > 2:
                     iter_plane_intersection_points.append(iter_shape_intersections)
+                    self.plane_intersection_slices.append(iter_shape_intersections)
             if len(iter_plane_intersection_points) > 0:
                 for j in range(0, len(iter_plane_intersection_points)):
                     self.waypoint_path_poly_planes[i].add_polygon_slice(iter_plane_intersection_points[j])
+
 
     def init_bounds_prism(self):
         bounding_rect = VectorMath.get_flat_bounds_of_vectors(self.point_bounds)
@@ -195,7 +197,6 @@ class WaypointBuilder:
     def get_top_perimeter_scale_points(self, top_point_bounds):
         bounding_flat_polygon = FlatPolygon(top_point_bounds)
         out_waypoints = []
-        #max_margin_extension =
         for i in range(1, 12):
             perimeter_points = bounding_flat_polygon.get_polygon_scaled_with_margin(self.top_fill_spacing * i).points.tolist()
             for j in range(0, len(perimeter_points)):
@@ -206,12 +207,14 @@ class WaypointBuilder:
 
     DRONE_PATH_EXTENSION = "/path"
     OBSTACLE_EXTENSION = "/obstacles"
+    SLICE_EXTENSION = "/plane_slices"
     '''saves the points to be displayed by the renderer'''
     def save(self, dir, name):
         if not os.path.exists(dir + "/" + name):
             os.makedirs(dir + "/" + name)
         path_dir = dir + "/" + name + WaypointBuilder.DRONE_PATH_EXTENSION + ".txt"
         obstacle_dir = dir + "/" + name + WaypointBuilder.OBSTACLE_EXTENSION + ".txt"
+        slice_dir = dir + "/" + name + WaypointBuilder.SLICE_EXTENSION + ".txt"
 
         with open(path_dir, 'w') as path_output:
             path_output.write(str(self.total_path))
@@ -225,3 +228,12 @@ class WaypointBuilder:
                     write_str += "\n"
             obstacle_output.write(write_str)
             obstacle_output.close()
+
+        with open(slice_dir, 'w') as slice_output:
+            write_str = ""
+            for i in range(0, len(self.plane_intersection_slices)):
+                write_str += str(self.plane_intersection_slices[i])
+                if i < len(self.plane_intersection_slices)-1:
+                    write_str += "\n"
+            slice_output.write(write_str)
+            slice_output.close()
