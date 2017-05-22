@@ -18,4 +18,4 @@ geo_points = [GeoPoint(38.860408, -77.242508, 0), GeoPoint(38.860453, -77.242499
 geo_points = list(reversed(geo_points))
 print("distance between points: ", GeoMath.get_total_haversine_distance(geo_points, is_loop = True))
 waypoint_builder = WaypointBuilder(geo_points, obstacles, 5.0, WaypointBuilder.get_top_floodfill_points)
-waypoint_builder.save("/Users/phusisian/Desktop/DZYNE/Python/Generated Waypoints/", "waypoints5")
+waypoint_builder.save("/Users/phusisian/Desktop/DZYNE/Python/Generated Waypoints/", "waypoints6")

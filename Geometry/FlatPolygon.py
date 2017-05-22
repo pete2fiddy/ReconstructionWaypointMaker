@@ -109,5 +109,4 @@ class FlatPolygon:
             if multiple_of_polysegment >= 0  and multiple_of_polysegment <= 1:
                 intersection_points.append(iter_polysegment[0] + iter_polysegment_sub * multiple_of_polysegment)
         intersection_points.sort(key = lambda intersection: intersection[0])
-        print("len intersection points: ", len(intersection_points))
         return intersection_points

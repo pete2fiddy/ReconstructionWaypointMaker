@@ -65,5 +65,4 @@ class Sphere:
         '''if there are points outside of the bounds of the plane, after their removal, they must be replaced with points that make
         them the correct polygon inside the bounds of the plane (i.e. if it's cut off at an edge, at a point at the points on that edge
         that define the shape)'''
-        print("transformed circle points are: ", transformed_circle_points)
         return transformed_circle_points

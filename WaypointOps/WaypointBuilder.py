@@ -149,7 +149,6 @@ class WaypointBuilder:
                 drone_xyz = numpy.array([pos_vector[0], pos_vector[1], drone_xyz[2] + self.dist_between_waypoints * self.altitude_roc])
 
             iter_segment = [self.spiral_points[len(self.spiral_points)-1], drone_xyz]
-            print("iter segment is: ", iter_segment)
             iter_geoplane = self.waypoint_path_poly_planes[waypoint_index-1]
             iter_segment_with_obstacle_intersections = iter_geoplane.avoid_obstacles_with_line(iter_segment)
             self.spiral_points.extend(iter_segment_with_obstacle_intersections[1:len(iter_segment_with_obstacle_intersections)])

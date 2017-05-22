@@ -1,5 +1,6 @@
 import numpy
 import Geometry.PolyMath as PolyMath
+from Geometry.FlatPolygon import FlatPolygon
 
 class PolyPlane:
     '''when calculating if a point lies on the plane, you must dot it with the plane's normal after subtracting the origin from the
@@ -12,11 +13,10 @@ class PolyPlane:
     def __init__(self, bounding_points):
         self.bounding_points = bounding_points
         self.origin = numpy.average(self.bounding_points, axis = 0)
-
         self.init_unit_normal()
         self.init_bounded_area()
-
         self.init_plane_basis_vectors()
+        self.init_flat_basis_polygon()
 
     def init_unit_normal(self):
         v1 = self.bounding_points[2]
@@ -63,6 +63,10 @@ class PolyPlane:
         basis2 = basis2_scaled / numpy.linalg.norm(basis2_scaled)
         self.basises = numpy.array([basis1, basis2, basis3])
 
+
+    def init_flat_basis_polygon(self):
+        flat_basis_bounds = [(self.bounding_points[i]-self.origin).dot(self.basises) for i in range(0, len(self.bounding_points))]
+        self.flat_basis_polygon = FlatPolygon(flat_basis_bounds)
 
     def get_total_area_of_triangles(self, triangles):
         total_area = 0
@@ -124,9 +128,7 @@ class PolyPlane:
         end_found = False
         distance_sum = 0
         i = (start_index + step)%len(self.bounding_points)
-        print("start index: ", start_index, " end index: ", end_index)
         while not end_found:
-            print("i is: ", i, " , my len is: ", len(self.bounding_points) )
             distance_sum += numpy.linalg.norm(self.bounding_points[i] - self.bounding_points[(i-step)%len(self.bounding_points)])
             if i == end_index:
                 end_found = True
