@@ -116,7 +116,7 @@ class Sphere:
                 point_index+=1
             else:
 
-                del[points[point_index]]
+                del points[point_index]
 
         points.extend(clipped_intersections)
         for i in range(0, len(poly_plane.bounding_points)):

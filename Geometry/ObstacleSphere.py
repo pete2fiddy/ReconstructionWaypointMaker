@@ -66,7 +66,7 @@ class ObstacleSphere(ObstacleShape):
         for i in range(0, len(untransformed_circle_points)):
             transformed_circle_points.append(untransformed_circle_points[i].dot(plane_basises) + plane_center_point)
         '''
-        return transformed_circle_points
+        return self.clip_points_with_plane(transformed_circle_points, plane)
 
     def slice_radius_at_displacement(self, displacement):
         return sqrt(self.radius_m**2 - displacement**2)

@@ -12,10 +12,6 @@ class WaypointPathPolyPlane(PolyPlane):
         self.slicing_flat_polygons = []
         '''flat_basis_bounds holds the bounding points of the polygon projected onto the plane using the self.basises vectors'''
 
-
-
-
-
     def add_polygon_slice(self, poly_points):
         self.slicing_poly_planes.append(PolyPlane(poly_points))
         self.add_flat_basis_polygon_slice(poly_points)

@@ -10,7 +10,7 @@ import os
 
 class OffsetWaypointBuilder(WaypointBuilder2):
 
-    DEFAULT_ALTITUDE_ROC = 0.025
+    DEFAULT_ALTITUDE_ROC = 0.01
 
     def __init__(self, bounding_geopoints, obstacles, max_alt, altitude_roc = None):
         self.bounding_geopoints = bounding_geopoints
