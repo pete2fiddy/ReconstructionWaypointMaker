@@ -11,10 +11,6 @@ class WaypointBuilder2(ABC):
         self.GEO_ORIGIN = GEO_ORIGIN
         self.obstacles.init_obstacle_cartesian_points(self.GEO_ORIGIN)
         self.init_obstacle_intersections_with_planes()
-
-
-
-
         '''placeholder variables to add in eventually:
         self.total_path: is a variable set by the subclasses.
         '''
