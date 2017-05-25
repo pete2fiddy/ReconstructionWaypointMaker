@@ -28,3 +28,9 @@ def get_flat_angle_intersecting_points(origin, compare, indices = (0,1)):
 
 def dot_angle_between(v1, v2):
     return acos(numpy.dot(v1,v2)/(numpy.linalg.norm(v1) * numpy.linalg.norm(v2)))
+
+def vec_proj(projection_vector, base_vector):
+    return (numpy.dot(projection_vector, base_vector)/numpy.linalg.norm(base_vector)**2)*base_vector
+
+def scalar_proj(projection_vector, base_vector):
+    return numpy.dot(projection_vector, base_vector/numpy.linalg.norm(base_vector))

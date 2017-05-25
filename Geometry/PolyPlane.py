@@ -1,6 +1,10 @@
 import numpy
 import Geometry.PolyMath as PolyMath
+import Geometry.LineMath as LineMath
 from Geometry.FlatPolygon import FlatPolygon
+import Geometry.AngleMath as AngleMath
+from math import atan2
+
 
 class PolyPlane:
     '''when calculating if a point lies on the plane, you must dot it with the plane's normal after subtracting the origin from the
@@ -44,12 +48,46 @@ class PolyPlane:
         error later'''
         return (total_area <= self.point_in_polygon_bounded_area_threshold)
 
+    def get_segment_intersections_with_edges(self, segment_points, maximum_distance_of_intersection):
+        out_points = []
+        for i in range(0, len(self.bounding_points)):
+            out_points.extend(self.get_segment_intersections_with_edge_at_index(segment_points, i, maximum_distance_of_intersection))
+            '''bounding_points_line = [self.bounding_points[i-1], self.bounding_points[i]]
+            segment_intersection, bounding_intersection = LineMath.get_points_of_minimum_distance_between_lines_3d(segment_points, bounding_points_line, True)
+            if segment_intersection != None and bounding_intersection != None:
+                dist_between_intersections = numpy.linalg.norm(segment_intersection - bounding_intersection)
+                if dist_between_intersections < maximum_distance_of_intersection:
+                    out_points.append(segment_intersection)'''
+        out_points.sort(key = lambda point : numpy.linalg.norm(point - segment_points[0]))
+        return out_points
+
+    def get_segment_intersections_with_edge_at_index(self, segment_points, index, maximum_distance_of_intersection):
+        out_points = []
+        bounding_points_line = [self.bounding_points[index-1], self.bounding_points[index]]
+        segment_intersection, bounding_intersection = LineMath.get_points_of_minimum_distance_between_lines_3d(segment_points, bounding_points_line, True)
+        if segment_intersection != None and bounding_intersection != None:
+            dist_between_intersections = numpy.linalg.norm(segment_intersection - bounding_intersection)
+            if dist_between_intersections < maximum_distance_of_intersection:
+                out_points.append(segment_intersection)
+        out_points.sort(key = lambda point : numpy.linalg.norm(point - segment_points[0]))
+        return out_points
+
+
     def line_lies_in_unbounded_plane(self, segment_points):
         for i in range(0, len(segment_points)):
             if not self.point_lies_in_unbounded_plane(segment_points[i]):
                 return False
         return True
 
+
+    def get_angle_to_coplanar_point_from_first_basis(self, point):
+        A = numpy.array([(point - self.origin), self.basises[0], self.unit_normal])
+        det_A = numpy.linalg.det(A)
+        dot = (point - self.origin).dot(self.basises[0])
+        angle_between = atan2(det_A, dot)
+
+        angle_between = AngleMath.normalize_angle_to_0_and_2pi(angle_between)
+        return angle_between
 
     '''inits a set of unit basis vectors where the first axis is determined by taking the unit vector of a single corner to
     the origin, the third is the normal vector, and the second is determiend through taking the cross product of the two.
@@ -62,6 +100,7 @@ class PolyPlane:
         basis2_scaled = numpy.cross(basis1, basis3)
         basis2 = basis2_scaled / numpy.linalg.norm(basis2_scaled)
         self.basises = numpy.array([basis1, basis2, basis3])
+        self.inverted_basises = numpy.linalg.inv(self.basises)
 
 
     def init_flat_basis_polygon(self):

@@ -12,7 +12,6 @@ class FlatPolygon:
         self.points = points
         self.bounding_rect = VectorMath.get_flat_bounds_of_vectors(self.points)
         self.origin = numpy.average(self.points, axis = 0)
-
     '''may be using lists and numpy arrays interchangeably in some places...'''
 
     '''return polygon scaled by amount margin (positive or negative) so that this polygon will be scaled by an amount that has a constant
@@ -108,5 +107,5 @@ class FlatPolygon:
 
             if multiple_of_polysegment >= 0  and multiple_of_polysegment <= 1:
                 intersection_points.append(iter_polysegment[0] + iter_polysegment_sub * multiple_of_polysegment)
-        intersection_points.sort(key = lambda intersection: intersection[0])
+        intersection_points.sort(key = lambda intersection: numpy.linalg.norm(intersection - segment_points[0]))
         return intersection_points

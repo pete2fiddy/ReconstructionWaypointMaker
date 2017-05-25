@@ -5,11 +5,23 @@ import ImgOps.VectorDraw as VectorDraw
 from Geometry.Sphere import Sphere
 import numpy
 from WaypointOps.Obstacle import Obstacle
+import Geometry.LineMath as LineMath
+import Geometry.AngleMath as AngleMath
 
-obstacle_geos = [GeoPoint(38.860438, -77.242484, 0.0025), GeoPoint(38.86042980000243,-77.24247560000045,0), GeoPoint(38.860469, -77.242500, .001), GeoPoint(38.860461, -77.242483, 0.0035)]
-obstacle_constraints = [(.75,), (0.85,), (1.0,), (1.1,)]
+line1 = [numpy.array([6,8,4]), numpy.array([12,15,4])]#[numpy.array([-2,-2,2]), numpy.array([4,2,4])]#[numpy.array([5,5,4]), numpy.array([10,10,6])]#
+line2 = [numpy.array([6,8,2]), numpy.array([12,15,6])]#[numpy.array([1,-2,-1.5]), numpy.array([3,4,8.5])]#[numpy.array([0,-3,-2]), numpy.array([2,3,8])]#[numpy.array([5,5,5]), numpy.array([10,10,3])]#[numpy.array([6,8,2]), numpy.array([12,15,6])]
+print("Intersection between lines: ", LineMath.get_points_of_minimum_distance_between_lines_3d(line1, line2, False))
+
+
+obstacle_geos = [GeoPoint(38.860438, -77.242484, 0.0025), GeoPoint(38.86042980000243,-77.24247560000045,0), GeoPoint(38.860469, -77.242500, .0045), GeoPoint(38.860461, -77.242483, 0.0035)]#[GeoPoint(38.860469, -77.242500, .0045)]
+obstacle_constraints = [(.75,), (0.85,), (1.0,), (1.1,)]#[(1.0,)]
 obstacle_shape_type = Sphere
 obstacles = []
+
+a1 = 4.682095220465914
+a2 = 2.950984244882326
+test_angle =  6.2#83185307179586
+print("Between? ", AngleMath.angle_is_between_angles_radians(a1, a2, test_angle))
 
 for i in range(0, len(obstacle_geos)):
     obstacles.append(Obstacle(obstacle_geos[i], obstacle_shape_type, obstacle_constraints[i]))

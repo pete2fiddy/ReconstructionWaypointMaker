@@ -106,10 +106,10 @@ class WaypointBuilder:
                 iter_shape = self.obstacles[j].shape
                 iter_shape_intersections = iter_shape.get_intersection_points_with_plane(self.waypoint_path_poly_planes[i], WaypointBuilder.DEFAULT_OBSTACLE_AVOIDANCE_RESOLUTION)
 
-                if not iter_shape_intersections == None and len(iter_shape_intersections) > 2:
+                if not iter_shape_intersections == None and len(iter_shape_intersections) > 3:
                     iter_plane_intersection_points.append(iter_shape_intersections)
                     self.plane_intersection_slices.append(iter_shape_intersections)
-            if len(iter_plane_intersection_points) > 0:
+            if len(iter_plane_intersection_points) > 3:
                 for j in range(0, len(iter_plane_intersection_points)):
                     self.waypoint_path_poly_planes[i].add_polygon_slice(iter_plane_intersection_points[j])
 

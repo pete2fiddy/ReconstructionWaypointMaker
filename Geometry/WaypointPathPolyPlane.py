@@ -12,7 +12,7 @@ class WaypointPathPolyPlane(PolyPlane):
         self.slicing_flat_polygons = []
         '''flat_basis_bounds holds the bounding points of the polygon projected onto the plane using the self.basises vectors'''
 
-        self.inverted_basises = numpy.linalg.inv(self.basises)
+
 
 
 
@@ -32,14 +32,13 @@ class WaypointPathPolyPlane(PolyPlane):
 
         '''holds tuples in the format point: (numpy xyz), slicing poly plane intersecting that point'''
         intersection_points = []
-        flat_intersection_points = []
         for i in range(0, len(self.slicing_flat_polygons)):
             iter_intersection_points = self.slicing_flat_polygons[i].get_segment_intersections(flat_line_points)
             if len(iter_intersection_points) > 0:
                 num_zeros_to_append = line_points[0].shape[0] - iter_intersection_points[0].shape[0]
                 extend_zero_list = [0 for j in range(0, num_zeros_to_append)]
                 for j in range(0, len(iter_intersection_points)):
-                    flat_intersection_points.append(iter_intersection_points[j].copy())
+
                     iter_intersection_points[j] = iter_intersection_points[j].tolist()
                     iter_intersection_points[j].extend(extend_zero_list)
                     iter_intersection_points[j] = numpy.array(iter_intersection_points[j])
@@ -48,37 +47,15 @@ class WaypointPathPolyPlane(PolyPlane):
                     else:
                         intersection_points.append((iter_intersection_points[j].dot(self.inverted_basises) + self.origin, None))
         i=0
-        previous_point_in_bounds = None
+
 
         while i < len(intersection_points):
             if not self.point_lies_in_bounded_plane(intersection_points[i][0]):
-                print("not point lies in bounded plane hit")
-                if previous_point_in_bounds == None or previous_point_in_bounds:
-                    print("previous point in bounds hit")
-                    '''if the previous point was in bounds, intersect the segment from that point to this one, then solve for the
-                    intersection of this plane's edges with that line'''
-                    iter_flat_segment = [flat_intersection_points[i-1], flat_intersection_points[i]]
-                    flat_segment_intersections = self.flat_basis_polygon.get_segment_intersections(iter_flat_segment)
-                    num_zeros_to_append = intersection_points[i].shape[0] - len(iter_flat_segment)
-                    extend_zero_list = [0 for j in range(0, num_zeros_to_append)]
-                    if len(flat_segment_intersections) == 1:
-                        flat_segment_intersection = flat_segment_intersections[0]
-                        flat_segment_intersection = iter_intersection_points[j].tolist()
-                        flat_segment_intersection.append(iter_intersection_points[j])
-                        flat_segment_intersection.extend(extend_zero_list)
-                        flat_segment_intersection = numpy.array(iter_intersection_points[j])
-                        intersection_points[i] = (flat_segment_intersection.dot(self.inverted_basises) + self.origin, intersection_points[i][1])
 
-                    elif len(flat_segment_intersections) > 1:
-                        print("len flat segment intersections was greater than 1")
-                    previous_point_in_bounds = False
-                else:
-                    print("delete is hit")
-                    del[intersection_points[i]]
-                previous_point_in_bounds = False
+
+                del[intersection_points[i]]
 
             else:
-                previous_point_in_bounds = True
                 i+=1
 
         intersection_points.sort(key = lambda intersection_point: numpy.linalg.norm(intersection_point[0] - line_points[0]))
