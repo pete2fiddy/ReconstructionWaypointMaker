@@ -10,7 +10,7 @@ import os
 
 class OffsetWaypointBuilder(WaypointBuilder2):
 
-    DEFAULT_ALTITUDE_ROC = 0.005
+    DEFAULT_ALTITUDE_ROC = 0.025
 
     def __init__(self, bounding_geopoints, obstacles, max_alt, altitude_roc = None):
         self.bounding_geopoints = bounding_geopoints
@@ -21,11 +21,13 @@ class OffsetWaypointBuilder(WaypointBuilder2):
 
         self.altitude_roc = altitude_roc if altitude_roc != None else OffsetWaypointBuilder.DEFAULT_ALTITUDE_ROC
 
-        WaypointBuilder2.__init__(self, obstacles)
+        WaypointBuilder2.__init__(self, obstacles, self.GEO_ORIGIN)
 
     def init_point_bounds(self):
-        self.geo_origin = GeoMath.get_avg_geo_point(self.bounding_geopoints)
-        self.point_bounds = self.geos_to_points(self.bounding_geopoints, self.geo_origin)
+        '''GEO_ORIGIN is in caps to signify that it should NEVER be edited (it gets passed to other classes and if there is a change in
+        one place, it would be incredibly confusing to fix)'''
+        self.GEO_ORIGIN = GeoMath.get_avg_geo_point(self.bounding_geopoints)
+        self.point_bounds = self.geos_to_points(self.bounding_geopoints, self.GEO_ORIGIN)
 
     def init_point_path_polyplanes(self):
         self.point_path_polyplanes = []
@@ -39,7 +41,6 @@ class OffsetWaypointBuilder(WaypointBuilder2):
             iter_points = [p1, p2, p3, p4]
             iter_poly_plane = WaypointPathPolyPlane(iter_points)
             self.point_path_polyplanes.append(iter_poly_plane)
-
 
     def create_waypoint_segments(self):
         waypoint_segments = WaypointSegments.init_empty()
