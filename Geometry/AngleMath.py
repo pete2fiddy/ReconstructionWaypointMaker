@@ -74,11 +74,6 @@ def get_dtheta_from_angle_to_angle(angle1, angle2):
 
 '''assumes angles are sorted from smallest to biggest inside each range, but not necessarily in order of ranges'''
 def angle_in_angle_ranges(angle_ranges, angle):
-    '''for i in range(0, len(angle_ranges)):
-        second_angle = angle_ranges[i][1] if angle_ranges[i][0] < angle_ranges[i][1] else angle_ranges[i][1] + 2.0*pi
-        if angle > angle_ranges[i][0] and angle < second_angle:
-            return True
-    '''
     for i in range(0, len(angle_ranges)):
         if angle_is_between_angles_radians(angle_ranges[i][0], angle_ranges[i][1], angle):
             return True
