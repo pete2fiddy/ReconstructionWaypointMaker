@@ -13,6 +13,7 @@ class WaypointBuilder(ABC):
         self.GEO_ORIGIN = GEO_ORIGIN
         self.obstacles.init_obstacle_cartesian_points(self.GEO_ORIGIN)
         self.init_obstacle_intersections_with_planes()
+        self.waypoint_segments.avoid_obstacles()
         '''placeholder variables to add in eventually:
         self.total_path: is a variable set by the subclasses.
         '''
@@ -34,14 +35,12 @@ class WaypointBuilder(ABC):
 
     def init_obstacle_intersections_with_planes(self):
         segment_planes = self.waypoint_segments.segment_planes
-
         for i in range(0, len(segment_planes)):
             for j in range(0, len(self.obstacles)):
                 intersections_with_plane = self.obstacles[j].intersect_with_plane(segment_planes[i], WaypointBuilder.DEFAULT_OBSTACLE_SLICE_RESOLUTION, bounded = True)
                 if intersections_with_plane != None and len(intersections_with_plane) > 2:
                     segment_planes[i].add_polygon_slice(intersections_with_plane)
-
-
+                    
     DRONE_PATH_EXTENSION = "/path"
     OBSTACLE_EXTENSION = "/obstacles"
     SLICE_EXTENSION = "/plane_slices"
@@ -59,7 +58,6 @@ class WaypointBuilder(ABC):
             path_output.write(self.waypoint_segments.save_str())
             path_output.close()
 
-        '''obstacles and slices not currently implemented'''
         with open(obstacle_dir, 'w') as obstacle_output:
             write_str = ""
             for i in range(0, len(self.obstacles)):

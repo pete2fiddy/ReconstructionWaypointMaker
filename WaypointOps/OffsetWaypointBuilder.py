@@ -56,8 +56,8 @@ class OffsetWaypointBuilder(WaypointBuilder):
             move_vector_2d = dist_to_next_waypoint * unit_vector_to_point_2d
 
             next_drone_xyz = drone_xyz + numpy.append(move_vector_2d, dist_to_next_waypoint * self.altitude_roc)
-
-            iter_segment = WaypointSegment([drone_xyz, next_drone_xyz], self.point_path_polyplanes[waypoint_index - 1])
+            '''be careful when instantiating waypoint segments that you are matching the segment to the correct plane'''
+            iter_segment = WaypointSegment([drone_xyz, next_drone_xyz], self.point_path_polyplanes[waypoint_index])
             '''copying in case it changes the pointer'''
             drone_xyz = next_drone_xyz.copy()
 

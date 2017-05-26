@@ -12,6 +12,12 @@ class WaypointSegments:
             if self[i].path_plane not in self.segment_planes:
                 self.segment_planes.append(self[i].path_plane)
 
+    def avoid_obstacles(self):
+        new_segments = []
+        for i in range(0, len(self)):
+            new_segments.extend(self[i].fit_to_obstacles())
+        self.waypoint_segments = new_segments
+        
 
     def __getitem__(self, index):
         return self.waypoint_segments[index]
@@ -36,6 +42,10 @@ class WaypointSegments:
             out_str += str(self.waypoint_segments[i].segment[0].tolist())
 
         return out_str
+
+    def copy(self):
+        copied_segments = [self.waypoint_segments[i].copy() for i in range(0, len(self.waypoitn_segments))]
+        return WaypointSegments(copied_segments)
 
     @classmethod
     def init_empty(cls):

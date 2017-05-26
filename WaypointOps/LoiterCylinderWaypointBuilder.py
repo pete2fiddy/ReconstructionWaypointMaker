@@ -25,10 +25,12 @@ class LoiterCylinderWaypointBuilder(WaypointBuilder):
         '''no operations are needed to convert the point bounds from geo to
         cartesian since they are all relative to the center geo already,
         meaning that they are relative to the origin to begin with'''
+
         '''creating circles is fairly often duplicated, and could be moved to an
         exterior class. However, the constraints are often different, but only slightly
         and it may just be better to recode it every time (i.e. some require fixed height),
         fixed x, fixed y, or other constraints that will be difficult to generalize'''
+
         self.point_bounds = []
         theta = 0
         theta_increment = 2.0*pi/float(self.theta_resolution)
@@ -63,7 +65,8 @@ class LoiterCylinderWaypointBuilder(WaypointBuilder):
             unit_vector_to_point_2d = vector_to_waypoint_2d/numpy.linalg.norm(vector_to_waypoint_2d)
             move_vector_2d = dist_to_next_waypoint * unit_vector_to_point_2d
             next_drone_xyz = drone_xyz + numpy.append(move_vector_2d, dist_to_next_waypoint * self.altitude_roc)
-            iter_segment = WaypointSegment([drone_xyz, next_drone_xyz], self.point_path_polyplanes[waypoint_index - 1])
+            '''be careful when instantiating waypoint segments that you are matching the segment to the correct plane'''
+            iter_segment = WaypointSegment([drone_xyz, next_drone_xyz], self.point_path_polyplanes[waypoint_index])
             '''copying in case it changes the pointer'''
             drone_xyz = next_drone_xyz.copy()
 

@@ -4,7 +4,7 @@ import numpy
 
 class WaypointPathPolyPlane(PolyPlane):
 
-    '''assumes only four points are passed.
+    '''assumes only four points are passed??? (Does it now? Made this comment a while ago)
     Points must be in polygon-point-draw order, and the first two points must be at the bottom of the polygon'''
     def __init__(self, bounding_points):
         PolyPlane.__init__(self, bounding_points)
@@ -71,13 +71,8 @@ class WaypointPathPolyPlane(PolyPlane):
                     path_to_extend = intersection_points[i][1].get_path_between_start_and_end_around_perimeter(start_point, end_point)
                     out_segments.append(start_point)
                     out_segments.append(end_point)
-                    #out_segments.extend(path_to_extend)
 
             else:
                 out_segments.append(intersection_points[i][0])
             i += 1
-
-        '''out_segments = [line_points[0]]
-        out_segments.extend(intersection_points)
-        out_segments.append(line_points[1])'''
         return out_segments
