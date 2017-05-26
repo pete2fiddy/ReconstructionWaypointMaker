@@ -15,7 +15,7 @@ class ObstacleSphere(ObstacleShape):
     def init_cartesian_points(self, GEO_ORIGIN):
         self.center_point = GeoMath.vector_between_geo_points(GEO_ORIGIN, self.center_geo) * 1000.0
 
-    def unbounded_intersect_with_plane(self, plane, resolution):
+    def intersect_with_plane(self, plane, resolution, bounded = True):
         dist_to_plane = plane.distance_to_point(self.center_point)
         if dist_to_plane > self.radius_m:
             return None
@@ -39,34 +39,11 @@ class ObstacleSphere(ObstacleShape):
             theta = float(theta_multiplier * theta_index)
             point_at_rotation = slice_radius * numpy.array([cos(theta), sin(theta), 0])
             untransformed_circle_points[theta_index] = point_at_rotation
-            #untransformed_circle_points[theta_index][2] += dist_to_plane
 
         transformed_circle_points = [untransformed_circle_points[i].dot(plane_basises) + slice_center_point for i in range(0, resolution)]
-
-        '''
-        dist_to_center = plane.distance_to_point(self.center_point)
-        if dist_to_center >= self.radius_m:
-            return None
-        slice_radius = self.slice_radius_at_displacement(dist_to_center)
-        plane_basises = plane.basises
-        theta_multiplier = 2.0*pi/float(resolution)
-        possible_plane_center_point1 = self.center_point - plane.unit_normal*dist_to_center
-        dist_to1 = plane.distance_to_point(possible_plane_center_point1)
-        possible_plane_center_point2 = self.center_point + plane.unit_normal*dist_to_center
-        dist_to2 = plane.distance_to_point(possible_plane_center_point2)
-        plane_center_point = possible_plane_center_point1 if dist_to1 < dist_to2 else possible_plane_center_point2
-
-        untransformed_circle_points = []
-        for theta_index in range(0, resolution + 1):
-            theta = float(theta_multiplier * theta_index)
-            iter_point = numpy.array([slice_radius * cos(theta), slice_radius * sin(theta), 0])
-            untransformed_circle_points.append(iter_point)
-
-        transformed_circle_points = []
-        for i in range(0, len(untransformed_circle_points)):
-            transformed_circle_points.append(untransformed_circle_points[i].dot(plane_basises) + plane_center_point)
-        '''
-        return self.clip_points_with_plane(transformed_circle_points, plane)
+        if bounded:
+            return self.clip_points_with_plane(transformed_circle_points, plane)
+        return transformed_circle_points
 
     def slice_radius_at_displacement(self, displacement):
         return sqrt(self.radius_m**2 - displacement**2)

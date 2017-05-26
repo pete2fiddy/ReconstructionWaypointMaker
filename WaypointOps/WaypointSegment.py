@@ -5,5 +5,3 @@ class WaypointSegment:
     def __init__(self, segment, path_plane):
         self.segment = segment
         self.path_plane = path_plane
-
-    

@@ -1,6 +1,6 @@
 from Geometry.WaypointPathPolyPlane import WaypointPathPolyPlane
 from Geometry.PolyPlane import PolyPlane
-from WaypointOps.WaypointBuilder2 import WaypointBuilder2
+from WaypointOps.WaypointBuilder import WaypointBuilder
 import GeoOps.GeoMath as GeoMath
 from WaypointOps.WaypointSegment import WaypointSegment
 from WaypointOps.WaypointSegments import WaypointSegments
@@ -8,7 +8,7 @@ import numpy
 import os
 
 
-class OffsetWaypointBuilder(WaypointBuilder2):
+class OffsetWaypointBuilder(WaypointBuilder):
 
     DEFAULT_ALTITUDE_ROC = 0.01
 
@@ -21,7 +21,7 @@ class OffsetWaypointBuilder(WaypointBuilder2):
 
         self.altitude_roc = altitude_roc if altitude_roc != None else OffsetWaypointBuilder.DEFAULT_ALTITUDE_ROC
 
-        WaypointBuilder2.__init__(self, obstacles, self.GEO_ORIGIN)
+        WaypointBuilder.__init__(self, obstacles, self.GEO_ORIGIN)
 
     def init_point_bounds(self):
         '''GEO_ORIGIN is in caps to signify that it should NEVER be edited (it gets passed to other classes and if there is a change in
@@ -43,6 +43,9 @@ class OffsetWaypointBuilder(WaypointBuilder2):
             self.point_path_polyplanes.append(iter_poly_plane)
 
     def create_waypoint_segments(self):
+        '''is a duplicate of the same code from LoiterCylinderWaypointBuilder, possible to
+        create a method that both can access that share the same code? Seems a little too
+        corner-case'''
         waypoint_segments = WaypointSegments.init_empty()
         drone_xyz = self.point_bounds[0].copy()
         waypoint_index = 1
@@ -54,9 +57,9 @@ class OffsetWaypointBuilder(WaypointBuilder2):
 
             next_drone_xyz = drone_xyz + numpy.append(move_vector_2d, dist_to_next_waypoint * self.altitude_roc)
 
-            '''segment does not pass the plane it lies on currently'''
             iter_segment = WaypointSegment([drone_xyz, next_drone_xyz], self.point_path_polyplanes[waypoint_index - 1])
-            drone_xyz = next_drone_xyz
+            '''copying in case it changes the pointer'''
+            drone_xyz = next_drone_xyz.copy()
 
             waypoint_segments.append(iter_segment)
             waypoint_index = (waypoint_index + 1)%(len(self.point_bounds))

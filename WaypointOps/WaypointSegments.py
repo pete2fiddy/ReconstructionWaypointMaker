@@ -5,7 +5,6 @@ class WaypointSegments:
     def __init__(self, waypoint_segments):
         self.waypoint_segments = waypoint_segments
         self.init_segment_planes()
-        print("waypoint segments: ", self.waypoint_segments)
 
     def init_segment_planes(self):
         self.segment_planes = []
@@ -32,8 +31,11 @@ class WaypointSegments:
             self.segment_planes.append(waypoint_segment.path_plane)
 
     def save_str(self):
-        point_lists = [self.waypoint_segments[i].segment[0] for i in range(0, len(self.waypoint_segments))]
-        return str(point_lists)
+        out_str = ""
+        for i in range(0, len(self.waypoint_segments)):
+            out_str += str(self.waypoint_segments[i].segment[0].tolist())
+
+        return out_str
 
     @classmethod
     def init_empty(cls):
