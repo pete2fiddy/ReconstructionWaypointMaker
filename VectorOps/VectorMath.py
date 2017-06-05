@@ -32,5 +32,13 @@ def dot_angle_between(v1, v2):
 def vec_proj(projection_vector, base_vector):
     return (numpy.dot(projection_vector, base_vector)/numpy.linalg.norm(base_vector)**2)*base_vector
 
+def vec_reject(rejection_vector, base_vector):
+    return rejection_vector - vec_proj(rejection_vector, base_vector)
+
 def scalar_proj(projection_vector, base_vector):
     return numpy.dot(projection_vector, base_vector/numpy.linalg.norm(base_vector))
+
+'''cannot return a negative scalar rejection'''
+def scalar_reject(rejection_vector, base_vector):
+    orthog_vector = vec_reject(rejection_vector, base_vector)
+    return scalar_proj(rejection_vector, orthog_vector)

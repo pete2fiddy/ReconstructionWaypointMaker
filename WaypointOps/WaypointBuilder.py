@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 import GeoOps.GeoMath as GeoMath
 import os
+import numpy
+import Geometry.LineMath as LineMath
 
 class WaypointBuilder(ABC):
     '''is abstract so cannot be instantiated other than through subclasses'''
@@ -18,8 +20,38 @@ class WaypointBuilder(ABC):
         self.total_path: is a variable set by the subclasses.
         '''
 
+    '''treats the entire path as a vector valued function and checks individual points to see if they are inside of an obstacle
+    by a certain margin. check_resolution determines how often a point is "created" and checked, in meters'''
+    def path_is_safe(self, check_resolution, safety_radius):
+        '''may not be working but can't figure out why'''
+        num_path_checks = 0
+        for i in range(0, len(self.waypoint_segments)):
+            iter_segment = self.waypoint_segments[i].segment
+            mag_iter_segment = numpy.linalg.norm(iter_segment[1] - iter_segment[0])
+            num_separations = int(mag_iter_segment/check_resolution)
+
+            if num_separations != 0:
+                t_step = 1.0/float(num_separations)
+
+
+                t = 0
+                while t < 1:
+                    point_at_t = LineMath.point_of_segment_at_t(iter_segment, t)
+                    for obstacle_index in range(0, len(self.obstacles)):
+                        if self.obstacles[obstacle_index].point_in_obstacle(point_at_t, safety_radius):
+                            return False
+                    t += t_step
+                    num_path_checks += 1
+            else:
+                print("num separations = 0")
+        print("len waypoint segments: ", len(self.waypoint_segments))
+        print("num path checks: ", num_path_checks)
+        return True
+
+
+
     '''should have methods that support taking a path that is made with no regard to obstacle collisions and alter
-    the path so that it does not collide witha ny obstacles.'''
+    the path so that it does not collide with any obstacles.'''
 
     @abstractmethod
     def create_waypoint_segments(self):
@@ -38,9 +70,10 @@ class WaypointBuilder(ABC):
         for i in range(0, len(segment_planes)):
             for j in range(0, len(self.obstacles)):
                 intersections_with_plane = self.obstacles[j].intersect_with_plane(segment_planes[i], WaypointBuilder.DEFAULT_OBSTACLE_SLICE_RESOLUTION, bounded = True)
+
                 if intersections_with_plane != None and len(intersections_with_plane) > 2:
-                    segment_planes[i].add_polygon_slice(intersections_with_plane)
-                    
+                    segment_planes[i].add_polygon_slice(self.obstacles[j], intersections_with_plane)
+
     DRONE_PATH_EXTENSION = "/path"
     OBSTACLE_EXTENSION = "/obstacles"
     SLICE_EXTENSION = "/plane_slices"
@@ -73,13 +106,15 @@ class WaypointBuilder(ABC):
         with open(slice_dir, 'w') as slice_output:
             write_str = ""
             for i in range(0, len(self.waypoint_segments.segment_planes)):
-                for j in range(0, len(self.waypoint_segments.segment_planes[i].slicing_poly_planes)):
-                    bounding_points = self.waypoint_segments.segment_planes[i].slicing_poly_planes[j].bounding_points
+                slices_on_plane = self.waypoint_segments.segment_planes[i].get_obstacle_slices()
+                for j in range(0, len(slices_on_plane)):
+                    bounding_points = slices_on_plane[j].bounding_points
                     for k in range(0, len(bounding_points)):
                         write_str += str(bounding_points[k].tolist())
 
-                    if j < len(self.waypoint_segments.segment_planes[i].slicing_poly_planes) - 1:
+                    if j < len(self.waypoint_segments.segment_planes[i].slice_obstacle_shapes) - 1:
                         write_str += "\n"
+
                 if i < len(self.waypoint_segments.segment_planes)-1:
                     write_str += "\n"
             slice_output.write(write_str)
@@ -89,7 +124,6 @@ class WaypointBuilder(ABC):
             write_str = ""
             for i in range(0, len(self.waypoint_segments.segment_planes)):
                 bounding_points = self.waypoint_segments.segment_planes[i].bounding_points
-                #write_str += str(self.waypoint_segments.segment_planes[i].bounding_points.tolist())
                 for j in range(0, len(bounding_points)):
                     write_str += str(bounding_points[j].tolist())
                 if i < len(self.waypoint_segments.segment_planes) - 1:

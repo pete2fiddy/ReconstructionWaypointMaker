@@ -1,9 +1,11 @@
 from abc import ABC, abstractmethod
 from Geometry.PolyPlane import PolyPlane
 import Geometry.AngleMath as AngleMath
+import numpy
 
 class ObstacleShape(ABC):
     MAX_DISTANCE_TO_BE_DEEMED_INTERSECTING = 0.00001
+    #MIN_DISTANCE_REQUIRED_BETWEEN_CLIPPED_POINTS = .1
     @abstractmethod
     def obstacle_points(self):
         pass
@@ -14,6 +16,13 @@ class ObstacleShape(ABC):
 
     @abstractmethod
     def intersect_with_plane(self, plane, resolution, bounded = True):
+        pass
+
+    '''a safety margin is required because when the obstacle is intersected with the plane, the drone will want to perfectly
+    fit the intersection lines, and could trigger being inside of the obstacle when it is really on the edge of it.
+    The margin is in meters'''
+    @abstractmethod
+    def point_in_obstacle(self, point, safety_margin):
         pass
 
     def clip_points_with_plane(self, in_points, plane):
@@ -69,10 +78,27 @@ class ObstacleShape(ABC):
             return points
         return None
 
+    '''
+    def remove_points_by_closeness(self, points, minimum_distance):
+        out_points = []
+        i = 0
+        while i < len(points):
+            p1 = points[i-1]
+            p2 = points[i]
+            dist_between_points = numpy.linalg.norm(p2-p1)
+            if dist_between_points < minimum_distance:
+                out_points.append((p1+p2)/2.0)
+                i+=1
+            else:
+                out_points.append(p1)
+            i+=1
+        print("len out_points: ", len(out_points), ", len(points): ", len(points))
+        return out_points
+        #points = out_points
+    '''
 
     def get_angle_ranges(self, unclipped_points_plane, points, point_in_plane_arr):
         in_bounds_angle_ranges = []
-        print("point_in_plane_arr: ", point_in_plane_arr)
         for i in range(0, len(point_in_plane_arr)):
             prev_point_in_plane = point_in_plane_arr[i-1]
             this_point_in_plane = point_in_plane_arr[i]

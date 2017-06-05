@@ -7,8 +7,8 @@ import numpy
 
 class LoiterCylinderWaypointBuilder(WaypointBuilder):
 
-    DEFAULT_ALTITUDE_ROC = 0.01
-    DEFAULT_THETA_RESOLUTION = 64
+    DEFAULT_ALTITUDE_ROC = 0.03
+    DEFAULT_THETA_RESOLUTION = 16
 
     def __init__(self, center_geopoint, radius_m, obstacles, max_alt, altitude_roc = None, theta_resolution = None):
         self.center_geopoint = center_geopoint

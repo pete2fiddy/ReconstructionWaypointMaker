@@ -13,11 +13,14 @@ class WaypointSegments:
                 self.segment_planes.append(self[i].path_plane)
 
     def avoid_obstacles(self):
+        '''is almost certain that just editing a single segment at a time will have cornercases that cause dangerous traversals.
+        In the future, if a prior segment is edited, edit the first point of the consecutive segment to start where the prior segment
+        leaves off... This may present difficulties'''
         new_segments = []
         for i in range(0, len(self)):
             new_segments.extend(self[i].fit_to_obstacles())
         self.waypoint_segments = new_segments
-        
+
 
     def __getitem__(self, index):
         return self.waypoint_segments[index]

@@ -15,6 +15,10 @@ class ObstacleSphere(ObstacleShape):
     def init_cartesian_points(self, GEO_ORIGIN):
         self.center_point = GeoMath.vector_between_geo_points(GEO_ORIGIN, self.center_geo) * 1000.0
 
+    def point_in_obstacle(self, point, safety_margin):
+        
+        return (numpy.linalg.norm(point - self.center_point) < self.radius_m - safety_margin)
+
     def intersect_with_plane(self, plane, resolution, bounded = True):
         dist_to_plane = plane.distance_to_point(self.center_point)
         if dist_to_plane > self.radius_m:

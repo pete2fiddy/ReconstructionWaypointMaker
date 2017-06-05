@@ -1,4 +1,5 @@
 import numpy
+import VectorOps.VectorMath as VectorMath
 
 '''
 line is a tuple of length two containing the first and second point, in that order.
@@ -24,10 +25,32 @@ def distance_between_lines(line1, line2, bounded):
     t_line_1, t_line_2 = get_points_of_minimum_distance_between_lines_3d(line1, line2, bounded)
     return numpy.linalg.norm(t_line_2 - t_line_1)
 
+def distance_from_segment_to_point(segment, point, bounded = True):
+    point_sub = point - segment[0]
+    segment_mag = numpy.linalg.norm(segment[1] - segment[0])
+    vec_rejection = VectorMath.vec_reject(point_sub, segment[1]-segment[0])
+
+    segment_unit = (segment[1]-segment[0])/numpy.linalg.norm(segment[1]-segment[0])
+    vec_projection_t = numpy.dot(point_sub, segment_unit)
+    mag_vec_rejection = numpy.linalg.norm(vec_rejection)
+    if bounded:
+        if vec_projection_t > segment_mag:
+            return numpy.linalg.norm(point - segment[1])
+        elif vec_projection_t < 0:
+            return numpy.linalg.norm(point_sub)
+    return mag_vec_rejection
 
 
 def point_of_segment_at_t(segment, t):
     return segment[0] + (segment[1]-segment[0]) * t
+
+def get_intersection_between_segments(segment1, segment2, bounded = True, minimum_distance = 0.05):
+    point1, point2 = get_points_of_minimum_distance_between_lines_3d(segment1, segment2, bounded)
+    if numpy.linalg.norm(point2-point1) > minimum_distance:
+        return None
+    '''will just return midpoint if they are minisculely close'''
+    return (point1 + point2)/2.0
+
 
 def get_points_of_minimum_distance_between_lines_3d(line1, line2, bounded):
     a1 = line1[0]
@@ -41,7 +64,7 @@ def get_points_of_minimum_distance_between_lines_3d(line1, line2, bounded):
     t_of_line2 = get_t_of_point_closest_to_line(line2, line1, bounded)
 
 
-    #'''if the value of t for either line is outside of the range it can be to be within either line, return None'''
+    '''if the value of t for either line is outside of the range it can be to be within either line, return None'''
     if bounded:
         if t_of_line1 > 1:
             t_of_line1 = 1
